@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-accommodation-table
+      author: Andrew
+      changes:
+        - createTable:
+            tableName: accommodations
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: enum('HOUSE','APARTMENT','CONDO','VACATION_HOME')
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: size
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: daily_rate
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: availability
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+              - createTable:
+                  tableName: accommodation_amenities
+                  columns:
+                    - column:
+                        name: accommodation_id
+                        type: bigint
+                        constraints:
+                          nullable: false
+                    - column:
+                        name: amenities
+                        type: varchar(255)
+                        constraints:
+                          nullable: false
+
+              - addForeignKeyConstraint:
+                  baseTableName: accommodation_amenities
+                  baseColumnNames: accommodation_id
+                  referencedTableName: accommodations
+                  referencedColumnNames: id
+                  constraintName: fk_accommodation_amenities_accommodation
