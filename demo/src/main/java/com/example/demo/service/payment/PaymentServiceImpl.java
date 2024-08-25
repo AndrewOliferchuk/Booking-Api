@@ -48,9 +48,9 @@ public class PaymentServiceImpl implements PaymentService {
         );
 
         Accommodation accommodation = accommodationRepository.findById(
-                booking.getAccommodationId()).orElseThrow(
-                        () -> new EntityNotFoundException("Can't found accommodation by id: "
-                                + booking.getAccommodationId()));
+                booking.getAccommodationId()).orElseThrow(() -> new EntityNotFoundException(
+                        "Can't found accommodation by id: "
+                        + booking.getAccommodationId()));
 
         BigDecimal amountToPay = calculateAmount(booking, accommodation);
         String paymentTitle = getBookingTitle(booking, accommodation);
@@ -61,27 +61,9 @@ public class PaymentServiceImpl implements PaymentService {
         Session session = stripePaymentService.createStripeSession(paymentTitle,
                 amountToPay, successUrl, cancelUrl);
 
-        Payment payment = new Payment();
-        payment.setBooking(booking);
-        payment.setPaymentStatus(PaymentStatus.PENDING);
-        payment.setAmountToPay(amountToPay);
-        payment.setSessionId(session.getId());
-        payment.setSessionUrl(session.getUrl());
-        paymentRepository.save(payment);
+        createAndSavePayment(booking, amountToPay, session.getId(), session.getUrl());
+
         return session.getUrl();
-    }
-
-    private BigDecimal calculateAmount(Booking booking, Accommodation accommodation) {
-        BigDecimal dailyRate = accommodation.getDailyRate();
-        long days = DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
-        return dailyRate.multiply(BigDecimal.valueOf(days));
-    }
-
-    private static String getBookingTitle(Booking booking, Accommodation accommodation) {
-        return BOOKING + SPACE
-                + accommodation.getLocation() + SPACE
-                + FROM + SPACE + booking.getCheckInDate().toString() + SPACE
-                + TO + SPACE + booking.getCheckOutDate().toString();
     }
 
     @Override
@@ -118,5 +100,30 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentStatus(PaymentStatus.CANCELLED);
         notificationService.notifyPaymentCancelled(payment);
         paymentRepository.save(payment);
+    }
+
+    protected BigDecimal calculateAmount(Booking booking, Accommodation accommodation) {
+        BigDecimal dailyRate = accommodation.getDailyRate();
+        long days = DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
+        return dailyRate.multiply(BigDecimal.valueOf(days));
+    }
+
+    protected Payment createAndSavePayment(
+            Booking booking, BigDecimal amountToPay, String sessionId, String sessionUrl) {
+        Payment payment = new Payment();
+        payment.setBooking(booking);
+        payment.setPaymentStatus(PaymentStatus.PENDING);
+        payment.setAmountToPay(amountToPay);
+        payment.setSessionId(sessionId);
+        payment.setSessionUrl(sessionUrl);
+        paymentRepository.save(payment);
+        return payment;
+    }
+
+    private static String getBookingTitle(Booking booking, Accommodation accommodation) {
+        return BOOKING + SPACE
+                + accommodation.getLocation() + SPACE
+                + FROM + SPACE + booking.getCheckInDate().toString() + SPACE
+                + TO + SPACE + booking.getCheckOutDate().toString();
     }
 }

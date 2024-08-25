@@ -36,26 +36,26 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     @Override
     public AccommodationResponseDto getById(Long id) {
-        Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't get accommodation by id: " + id));
+        Accommodation accommodation = findAccommodationById(id);
         return accommodationMapper.toDto(accommodation);
     }
 
     @Override
     public AccommodationResponseDto updateById(Long id, AccommodationRequestDto requestDto) {
-        Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Accommodation not found by id: " + id)
-        );
+        Accommodation accommodation = findAccommodationById(id);
         accommodationMapper.updateAccommodation(requestDto, accommodation);
         return accommodationMapper.toDto(accommodationRepository.save(accommodation));
     }
 
     @Override
     public void deleteById(Long id) {
-        Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Accommodation not found by id: " + id)
-        );
+        Accommodation accommodation = findAccommodationById(id);
         accommodationRepository.deleteById(id);
         notificationService.notifyAccommodationReleased(accommodation);
+    }
+
+    private Accommodation findAccommodationById(Long id) {
+        return accommodationRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Accommodation not found by id: " + id));
     }
 }

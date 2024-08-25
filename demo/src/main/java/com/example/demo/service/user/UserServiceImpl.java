@@ -21,8 +21,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto currentUser(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("User not found with email: " + email));
+        User user = findUserByEmail(email);
         return userMapper.toDto(user);
     }
 
@@ -36,11 +35,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto updateProfile(String email, UserUpdateRequestDto requestDto) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("User not found with email: " + email));
+        User user = findUserByEmail(email);
         user.setFirstName(requestDto.firstName());
         user.setLastName(requestDto.lastName());
         user.setPassword(passwordEncoder.encode(requestDto.password()));
         return userMapper.toDto(userRepository.save(user));
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with email: " + email));
     }
 }

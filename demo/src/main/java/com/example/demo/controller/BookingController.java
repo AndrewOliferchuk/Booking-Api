@@ -33,7 +33,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('MANAGER','CUSTOMER')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new booking",
             description = "Save a new booking in repository")
@@ -42,7 +42,7 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('MANAGER','CUSTOMER')")
     @Operation(summary = "Retrieve booking by ID",
             description = "Fetch the details of a specific "
                     + "booking using its unique identifier")
@@ -60,7 +60,7 @@ public class BookingController {
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('MANAGER','CUSTOMER')")
     @Operation(summary = "Retrieve all bookings for the authenticated user",
             description = "Fetches a list of all bookings associated with "
                     + "the currently authenticated user ")
@@ -70,7 +70,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('MANAGER','CUSTOMER')")
     @Operation(summary = "Update a booking by ID",
             description = "Updates the details of a booking specified by the given ID ")
     public BookingResponseDto updateBooking(@PathVariable @Positive Long id,
@@ -79,7 +79,7 @@ public class BookingController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('MANAGER','CUSTOMER')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a booking by ID",
             description = "Deletes the booking specified by the given ID")

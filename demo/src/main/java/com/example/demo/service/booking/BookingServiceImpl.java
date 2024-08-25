@@ -37,15 +37,13 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto getById(Long id) {
-        Booking booking = bookingRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't get booking by id: " + id));
+        Booking booking = findBookingById(id);
         return bookingMapper.toDto(booking);
     }
 
     @Override
     public BookingResponseDto updateById(Long id, BookingRequestDto requestDto) {
-        Booking booking = bookingRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't get id: " + id));
+        Booking booking = findBookingById(id);
         bookingMapper.updateBooking(requestDto, booking);
         if (booking.getStatus().equals(BookingStatus.CANCELED)) {
             notificationService.notifyBookingCanceled(booking);
@@ -64,5 +62,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void delete(Long id) {
         bookingRepository.deleteById(id);
+    }
+
+    private Booking findBookingById(Long id) {
+        return bookingRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't get booking by id: " + id));
     }
 }

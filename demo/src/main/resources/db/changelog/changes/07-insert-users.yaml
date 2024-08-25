@@ -15,6 +15,7 @@ databaseChangeLog:
               - column:
                   name: password
                   value: '$2y$10$qIUiXYnj/tyQn8VlqAZMIeYrz7QdjHeQ.KwlcPMO17WCD1C55NU7W'
+                  # password: '123456789'
               - column:
                   name: first_name
                   value: 'Manager'
@@ -36,6 +37,7 @@ databaseChangeLog:
               - column:
                   name: password
                   value: '$2y$10$qIUiXYnj/tyQn8VlqAZMIeYrz7QdjHeQ.KwlcPMO17WCD1C55NU7W'
+                  # password: '123456789'
               - column:
                   name: first_name
                   value: 'Customer'
